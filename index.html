@@ -19,7 +19,8 @@
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      width: 300px;
+      width: 90%;
+      max-width: 800px;
       text-align: center;
     }
 
@@ -52,6 +53,14 @@
       color: black;
       font-weight: bold;
     }
+
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
+      margin-top: 20px;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -65,32 +74,67 @@
 </div>
 
 <div class="dashboard" id="dashboard">
-  <h2>Bienvenido</h2>
-  <button class="powerbi-button" onclick="window.open('https://app.powerbi.com/view?r=LINK1')">Ver Informe 1</button>
-  <button class="powerbi-button" onclick="window.open('https://app.powerbi.com/view?r=LINK2')">Ver Informe 2</button>
-  <!-- Puedes agregar más botones aquí -->
+  <h2 id="bienvenida">Bienvenido</h2>
+  <div id="enlaces"></div>
+  <iframe id="visor"></iframe>
   <button onclick="cerrarSesion()">Cerrar sesión</button>
 </div>
 
 <script>
-  // Puedes cambiar estos valores para agregar más usuarios
+  // Usuarios con enlaces personalizados
   const usuarios = [
-    { usuario: "admin", contrasena: "1234" },
-    { usuario: "usuario1", contrasena: "clave1" }
+    {
+      usuario: "admin",
+      contrasena: "1234",
+      enlaces: [
+        { texto: "Informe General", url: "https://app.powerbi.com/view?r=LINK_ADMIN" },
+        { texto: "Panel de Control", url: "https://app.powerbi.com/view?r=LINK_PANEL" }
+      ]
+    },
+    {
+      usuario: "usuario1",
+      contrasena: "clave1",
+      enlaces: [
+        { texto: "Informe de Ventas", url: "https://app.powerbi.com/view?r=LINK_USUARIO1" }
+      ]
+    }
   ];
+
+  let usuarioActivo = null;
 
   function validarIngreso() {
     const u = document.getElementById("usuario").value;
     const c = document.getElementById("contrasena").value;
 
-    const coincide = usuarios.find(user => user.usuario === u && user.contrasena === c);
+    const encontrado = usuarios.find(user => user.usuario === u && user.contrasena === c);
 
-    if (coincide) {
+    if (encontrado) {
+      usuarioActivo = encontrado;
       document.getElementById("login").style.display = "none";
       document.getElementById("dashboard").style.display = "block";
+      document.getElementById("bienvenida").innerText = "Bienvenido, " + usuarioActivo.usuario;
+      mostrarEnlaces(encontrado.enlaces);
     } else {
       document.getElementById("error").innerText = "Usuario o contraseña incorrectos.";
     }
+  }
+
+  function mostrarEnlaces(enlaces) {
+    const contenedor = document.getElementById("enlaces");
+    const visor = document.getElementById("visor");
+    contenedor.innerHTML = "";
+    visor.style.display = "none"; // ocultar iframe hasta que se seleccione un informe
+
+    enlaces.forEach(link => {
+      const btn = document.createElement("button");
+      btn.innerText = link.texto;
+      btn.className = "powerbi-button";
+      btn.onclick = () => {
+        visor.src = link.url;
+        visor.style.display = "block";
+      };
+      contenedor.appendChild(btn);
+    });
   }
 
   function cerrarSesion() {
@@ -99,6 +143,9 @@
     document.getElementById("usuario").value = "";
     document.getElementById("contrasena").value = "";
     document.getElementById("error").innerText = "";
+    document.getElementById("enlaces").innerHTML = "";
+    document.getElementById("visor").src = "";
+    document.getElementById("visor").style.display = "none";
   }
 </script>
 
