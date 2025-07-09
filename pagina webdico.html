@@ -1,11 +1,106 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Mi Primera Página</title>
+  <meta charset="UTF-8">
+  <title>Ingreso seguro</title>
+  <style>
+    body {
+      background-color: #d3d3d3;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .login-container, .dashboard {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      width: 300px;
+      text-align: center;
+    }
+
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-top: 15px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .dashboard {
+      display: none;
+    }
+
+    .powerbi-button {
+      display: block;
+      margin: 10px 0;
+      background-color: #f3c200;
+      color: black;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-    <h1>¡Hola mundo!</h1>
-    <p>Esta es mi primera página web pública.</p>
+
+<div class="login-container" id="login">
+  <h2>Ingreso</h2>
+  <input type="text" id="usuario" placeholder="Usuario">
+  <input type="password" id="contrasena" placeholder="Contraseña">
+  <button onclick="validarIngreso()">Ingresar</button>
+  <p id="error" style="color:red;"></p>
+</div>
+
+<div class="dashboard" id="dashboard">
+  <h2>Bienvenido</h2>
+  <button class="powerbi-button" onclick="window.open('https://app.powerbi.com/view?r=LINK1')">Ver Informe 1</button>
+  <button class="powerbi-button" onclick="window.open('https://app.powerbi.com/view?r=LINK2')">Ver Informe 2</button>
+  <!-- Puedes agregar más botones aquí -->
+  <button onclick="cerrarSesion()">Cerrar sesión</button>
+</div>
+
+<script>
+  // Puedes cambiar estos valores para agregar más usuarios
+  const usuarios = [
+    { usuario: "admin", contrasena: "1234" },
+    { usuario: "usuario1", contrasena: "clave1" }
+  ];
+
+  function validarIngreso() {
+    const u = document.getElementById("usuario").value;
+    const c = document.getElementById("contrasena").value;
+
+    const coincide = usuarios.find(user => user.usuario === u && user.contrasena === c);
+
+    if (coincide) {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+    } else {
+      document.getElementById("error").innerText = "Usuario o contraseña incorrectos.";
+    }
+  }
+
+  function cerrarSesion() {
+    document.getElementById("login").style.display = "block";
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("usuario").value = "";
+    document.getElementById("contrasena").value = "";
+    document.getElementById("error").innerText = "";
+  }
+</script>
+
 </body>
 </html>
