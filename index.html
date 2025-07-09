@@ -3,15 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <title>Ingreso seguro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
       background-color: #d3d3d3;
       font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+    }
+
+    .container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .login-container, .dashboard {
@@ -21,74 +32,90 @@
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
       width: 90%;
       max-width: 800px;
+      max-height: 95vh;
+      overflow-y: auto;
       text-align: center;
     }
 
     input {
       width: 90%;
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
       border-radius: 5px;
       border: 1px solid #ccc;
+      font-size: 16px;
     }
 
     button {
-      padding: 10px 20px;
+      padding: 12px 20px;
       margin-top: 15px;
       background-color: #0078d4;
       color: white;
       border: none;
       border-radius: 5px;
+      font-size: 16px;
       cursor: pointer;
     }
 
     .dashboard {
       display: none;
+      flex-direction: column;
     }
 
     .powerbi-button {
       display: block;
-      margin: 10px 0;
+      margin: 10px auto;
       background-color: #f3c200;
       color: black;
       font-weight: bold;
+      width: 90%;
     }
 
     iframe {
       width: 100%;
-      height: 500px;
+      height: 70vh;
       border: none;
       margin-top: 20px;
       display: none;
     }
+
+    @media (max-width: 600px) {
+      .login-container, .dashboard {
+        padding: 20px;
+      }
+
+      iframe {
+        height: 60vh;
+      }
+    }
   </style>
 </head>
 <body>
+<div class="container">
+  <div class="login-container" id="login">
+    <h2>Ingreso</h2>
+    <input type="text" id="usuario" placeholder="Usuario">
+    <input type="password" id="contrasena" placeholder="Contraseña">
+    <button onclick="validarIngreso()">Ingresar</button>
+    <p id="error" style="color:red;"></p>
+  </div>
 
-<div class="login-container" id="login">
-  <h2>Ingreso</h2>
-  <input type="text" id="usuario" placeholder="Usuario">
-  <input type="password" id="contrasena" placeholder="Contraseña">
-  <button onclick="validarIngreso()">Ingresar</button>
-  <p id="error" style="color:red;"></p>
-</div>
-
-<div class="dashboard" id="dashboard">
-  <h2 id="bienvenida">Bienvenido</h2>
-  <div id="enlaces"></div>
-  <iframe id="visor"></iframe>
-  <button onclick="cerrarSesion()">Cerrar sesión</button>
+  <div class="dashboard" id="dashboard">
+    <h2 id="bienvenida">Bienvenido</h2>
+    <div id="enlaces"></div>
+    <iframe id="visor"></iframe>
+    <button onclick="cerrarSesion()">Cerrar sesión</button>
+  </div>
 </div>
 
 <script>
-  // Usuarios con enlaces personalizados
   const usuarios = [
     {
       usuario: "admin",
       contrasena: "1234",
       enlaces: [
-        { texto: "Informe General", url: "https://app.powerbi.com/view?r=eyJrIjoiMzA3YzE2OWMtNWMxMi00YTVlLThmOGItMzVjOGYzNDZmOWViIiwidCI6ImNlZDIxZGE2LTI0MjQtNDU4MS04MmMzLWRjZjQzZmU0OGU1NiJ9&embedImagePlaceholder=true" },
-        { texto: "Panel de Control", url: "https://app.powerbi.com/view?r=eyJrIjoiM2MwMTZlMzMtYmU1Yy00MWVmLTk3YjktZjhmOTNlZTQ3MWM5IiwidCI6ImNlZDIxZGE2LTI0MjQtNDU4MS04MmMzLWRjZjQzZmU0OGU1NiJ9" }
+        { texto: "Informe General", url: "https://app.powerbi.com/view?r=LINK_ADMIN" },
+        { texto: "Panel de Control", url: "https://app.powerbi.com/view?r=LINK_PANEL" }
       ]
     },
     {
@@ -111,7 +138,7 @@
     if (encontrado) {
       usuarioActivo = encontrado;
       document.getElementById("login").style.display = "none";
-      document.getElementById("dashboard").style.display = "block";
+      document.getElementById("dashboard").style.display = "flex";
       document.getElementById("bienvenida").innerText = "Bienvenido, " + usuarioActivo.usuario;
       mostrarEnlaces(encontrado.enlaces);
     } else {
@@ -123,7 +150,7 @@
     const contenedor = document.getElementById("enlaces");
     const visor = document.getElementById("visor");
     contenedor.innerHTML = "";
-    visor.style.display = "none"; // ocultar iframe hasta que se seleccione un informe
+    visor.style.display = "none";
 
     enlaces.forEach(link => {
       const btn = document.createElement("button");
@@ -138,7 +165,7 @@
   }
 
   function cerrarSesion() {
-    document.getElementById("login").style.display = "block";
+    document.getElementById("login").style.display = "flex";
     document.getElementById("dashboard").style.display = "none";
     document.getElementById("usuario").value = "";
     document.getElementById("contrasena").value = "";
@@ -148,6 +175,5 @@
     document.getElementById("visor").style.display = "none";
   }
 </script>
-
 </body>
 </html>
