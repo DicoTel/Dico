@@ -2,110 +2,90 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Ingreso seguro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingreso Seguro</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      width: 100vw;
-      height: 100vh;
+      height: 100%;
       background-color: #d3d3d3;
       font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .container {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
     }
 
     .login-container, .dashboard {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 20px;
+    }
+
+    .login-container {
       background-color: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      width: 90%;
-      max-width: 800px;
-      max-height: 95vh;
-      overflow-y: auto;
-      text-align: center;
-    }
-
-    input {
-      width: 90%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-
-    button {
-      padding: 12px 20px;
-      margin-top: 15px;
-      background-color: #0078d4;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
     }
 
     .dashboard {
+      background-color: white;
       display: none;
-      flex-direction: column;
     }
 
-    .powerbi-button {
-      display: block;
-      margin: 10px auto;
-      background-color: #f3c200;
-      color: black;
-      font-weight: bold;
-      width: 90%;
+    select, input {
+      width: 250px;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 6px 12px;
+      margin: 5px;
+      background-color: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
     iframe {
       width: 100%;
-      height: 70vh;
+      height: 85vh;
       border: none;
-      margin-top: 20px;
-      display: none;
+      margin-top: 10px;
     }
 
-    @media (max-width: 600px) {
-      .login-container, .dashboard {
-        padding: 20px;
-      }
+    #error {
+      color: red;
+    }
 
-      iframe {
-        height: 60vh;
-      }
+    .botonera {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 10px;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <div class="login-container" id="login">
-    <h2>Ingreso</h2>
-    <input type="text" id="usuario" placeholder="Usuario">
-    <input type="password" id="contrasena" placeholder="Contraseña">
-    <button onclick="validarIngreso()">Ingresar</button>
-    <p id="error" style="color:red;"></p>
-  </div>
 
-  <div class="dashboard" id="dashboard">
-    <h2 id="bienvenida">Bienvenido</h2>
-    <div id="enlaces"></div>
-    <iframe id="visor"></iframe>
-    <button onclick="cerrarSesion()">Cerrar sesión</button>
-  </div>
+<div class="login-container" id="login">
+  <h2>Ingreso</h2>
+  <select id="usuario">
+    <option value="">Seleccione usuario</option>
+    <option value="admin">admin</option>
+    <option value="usuario1">usuario1</option>
+    <option value="usuario2">usuario2</option>
+  </select>
+  <input type="password" id="contrasena" placeholder="Contraseña">
+  <button onclick="validarIngreso()">Ingresar</button>
+  <p id="error"></p>
+</div>
+
+<div class="dashboard" id="dashboard">
+  <div class="botonera" id="botones-container"></div>
+  <iframe id="visor" style="display:none;"></iframe>
+  <button onclick="cerrarSesion()">Cerrar sesión</button>
 </div>
 
 <script>
@@ -113,54 +93,58 @@
     {
       usuario: "admin",
       contrasena: "1234",
-      enlaces: [
-        { texto: "Informe General", url: "https://app.powerbi.com/view?r=LINK_ADMIN" },
-        { texto: "Panel de Control", url: "https://app.powerbi.com/view?r=LINK_PANEL" }
+      botones: [
+        { nombre: "Indicadores", link: "https://app.powerbi.com/view?r=eyJrIjoiMzA3YzE2OWMtNWMxMi00YTVlLThmOGItMzVjOGYzNDZmOWViIiwidCI6ImNlZDIxZGE2LTI0MjQtNDU4MS04MmMzLWRjZjQzZmU0OGU1NiJ9" },
+        { nombre: "Facturación", link: "https://app.powerbi.com/view?r=eyJrIjoiZDA3MDZhZTYtMTQyNy00MDhkLTkxZDUtYWUwZTkwYTYzNjk5IiwidCI6ImNlZDIxZGE2LTI0MjQtNDU4MS04MmMzLWRjZjQzZmU0OGU1NiJ9" },
+        { nombre: "Seguimiento CDA", link: "https://app.powerbi.com/view?r=eyJrIjoiZDU4MGUwZDctZTIzNC00ZGM3LWJmZTItMjBmN2EwNTljNGU3IiwidCI6ImNlZDIxZGE2LTI0MjQtNDU4MS04MmMzLWRjZjQzZmU0OGU1NiJ9" },
+	{ nombre: "Cierre Ciclo", link: "https://app.powerbi.com/view?r=eyJrIjoiZjZlMzExNTQtN2Y0Ni00M2ZmLThiODItZGJlMjAyMzViMjAxIiwidCI6ImNlZDIxZGE2LTI0MjQtNDU4MS04MmMzLWRjZjQzZmU0OGU1NiJ9" }
       ]
     },
     {
       usuario: "usuario1",
       contrasena: "clave1",
-      enlaces: [
-        { texto: "Informe de Ventas", url: "https://app.powerbi.com/view?r=LINK_USUARIO1" }
+      botones: [
+        { nombre: "Ventas Mensuales", link: "https://app.powerbi.com/view?r=eyJrIjoiXXX..." },
+        { nombre: "Comparativo Anual", link: "https://app.powerbi.com/view?r=eyJrIjoiYYY..." }
+      ]
+    },
+    {
+      usuario: "usuario2",
+      contrasena: "clave2",
+      botones: [
+        { nombre: "Producción Diaria", link: "https://app.powerbi.com/view?r=eyJrIjoiZZZ..." }
       ]
     }
   ];
 
-  let usuarioActivo = null;
-
   function validarIngreso() {
     const u = document.getElementById("usuario").value;
     const c = document.getElementById("contrasena").value;
+    const user = usuarios.find(x => x.usuario === u && x.contrasena === c);
 
-    const encontrado = usuarios.find(user => user.usuario === u && user.contrasena === c);
-
-    if (encontrado) {
-      usuarioActivo = encontrado;
+    if (user) {
       document.getElementById("login").style.display = "none";
       document.getElementById("dashboard").style.display = "flex";
-      document.getElementById("bienvenida").innerText = "Bienvenido, " + usuarioActivo.usuario;
-      mostrarEnlaces(encontrado.enlaces);
+      generarBotones(user.botones);
     } else {
       document.getElementById("error").innerText = "Usuario o contraseña incorrectos.";
     }
   }
 
-  function mostrarEnlaces(enlaces) {
-    const contenedor = document.getElementById("enlaces");
+  function generarBotones(botones) {
+    const contenedor = document.getElementById("botones-container");
     const visor = document.getElementById("visor");
     contenedor.innerHTML = "";
     visor.style.display = "none";
 
-    enlaces.forEach(link => {
-      const btn = document.createElement("button");
-      btn.innerText = link.texto;
-      btn.className = "powerbi-button";
-      btn.onclick = () => {
-        visor.src = link.url;
+    botones.forEach(boton => {
+      const b = document.createElement("button");
+      b.innerText = boton.nombre;
+      b.onclick = () => {
+        visor.src = boton.link;
         visor.style.display = "block";
       };
-      contenedor.appendChild(btn);
+      contenedor.appendChild(b);
     });
   }
 
@@ -170,10 +154,11 @@
     document.getElementById("usuario").value = "";
     document.getElementById("contrasena").value = "";
     document.getElementById("error").innerText = "";
-    document.getElementById("enlaces").innerHTML = "";
     document.getElementById("visor").src = "";
     document.getElementById("visor").style.display = "none";
+    document.getElementById("botones-container").innerHTML = "";
   }
 </script>
+
 </body>
 </html>
